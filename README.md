@@ -1,66 +1,90 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
-
 <p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
+  <img src="https://img.shields.io/badge/Laravel-9-FF2D20?logo=laravel&logoColor=white" alt="Laravel 9">
+  <img src="https://img.shields.io/badge/PHP-8.0-777BB4?logo=php&logoColor=white" alt="PHP 8.0">
+  <img src="https://img.shields.io/badge/MySQL-8-4479A1?logo=mysql&logoColor=white" alt="MySQL">
+  <img src="https://img.shields.io/badge/Bootstrap-5-7952B3?logo=bootstrap&logoColor=white" alt="Bootstrap 5">
+  <img src="https://img.shields.io/badge/license-MIT-green" alt="License MIT">
 </p>
 
-## About Laravel
+# 🏪 Boutique Quartier
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Application web **multi-boutique** de vente et de gestion de stock pour les petits commerces de quartier (épiceries, superettes...). Chaque boutique s'inscrit indépendamment et dispose de son propre catalogue, de son propre stock, de son historique de ventes et de son équipe — sans aucune donnée partagée entre boutiques.
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+Construit avec **Laravel 9**, **MySQL** et **Bootstrap 5** (pas de build front-end requis).
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+## ✨ Fonctionnalités
 
-## Learning Laravel
+**Vente / caisse (POS)**
+- Interface de vente rapide : recherche produit, panier interactif, calcul automatique du total
+- Décrément de stock atomique (transaction + verrou pessimiste) pour éviter toute survente en cas d'accès concurrent
+- Génération de reçu imprimable et export **PDF** (format ticket de caisse 80mm)
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+**Gestion de stock**
+- CRUD produits avec catégories, prix d'achat/vente, quantité en stock
+- Seuils d'alerte configurables par produit avec badges visuels (stock bas / rupture)
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+**Rapports & statistiques**
+- Chiffre d'affaires et nombre de ventes sur une période personnalisable
+- Classement des produits les plus vendus
+- Ventes par jour, paginées
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+**Multi-boutique & sécurité**
+- Chaque boutique s'inscrit elle-même (`/register`) : création automatique du compte gérant
+- Isolation stricte des données entre boutiques (vérifiée à chaque requête, y compris sur les accès directs par ID)
+- Deux rôles : **Gérant** (accès complet) et **Vendeur** (vente + consultation stock uniquement), appliqués via un middleware dédié
 
-## Laravel Sponsors
+## 🏗️ Architecture des données
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+```mermaid
+erDiagram
+    BOUTIQUE ||--o{ USER : emploie
+    BOUTIQUE ||--o{ PRODUIT : catalogue
+    BOUTIQUE ||--o{ CATEGORIE : catalogue
+    BOUTIQUE ||--o{ VENTE : historique
+    CATEGORIE ||--o{ PRODUIT : classe
+    USER ||--o{ VENTE : enregistre
+    VENTE ||--o{ LIGNE_VENTE : contient
+    PRODUIT ||--o{ LIGNE_VENTE : vendu_dans
+```
 
-### Premium Partners
+Toute requête métier est automatiquement filtrée par `boutique_id` (voir `Controller::boutiqueId()`), et les routes de gestion (produits, catégories, rapports, utilisateurs) sont protégées par un middleware `role:gerant`.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+## 🚀 Installation locale
 
-## Contributing
+```bash
+git clone https://github.com/Anani23/boutique-quartier.git
+cd boutique-quartier
+composer install
+cp .env.example .env
+php artisan key:generate
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Configurer la base de données dans `.env` (`DB_DATABASE`, `DB_USERNAME`, `DB_PASSWORD`), puis :
 
-## Code of Conduct
+```bash
+php artisan migrate --seed
+php artisan serve
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+Le seeder crée une boutique de démonstration ("Épicerie du Coin") avec des produits, catégories et ventes d'exemple.
 
-## Security Vulnerabilities
+## 🔑 Comptes de démonstration
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+| Rôle    | Email                     | Mot de passe |
+|---------|---------------------------|---------------|
+| Gérant  | `gerant@boutique.test`    | `password`    |
+| Vendeur | `vendeur@boutique.test`   | `password`    |
 
-## License
+## 🛠️ Stack technique
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+- **Backend** : Laravel 9 / PHP 8.0
+- **Base de données** : MySQL
+- **Frontend** : Blade + Bootstrap 5 (CDN, sans étape de build)
+- **PDF** : [barryvdh/laravel-dompdf](https://github.com/barryvdh/laravel-dompdf)
+
+## 📋 Pistes d'évolution
+
+- [ ] Photos produits
+- [ ] Export CSV des rapports
+- [ ] Notifications de stock bas par email
+- [ ] API mobile pour la caisse
