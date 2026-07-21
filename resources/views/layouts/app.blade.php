@@ -76,6 +76,19 @@
                                 <span class="nav-link-title">Vendeurs</span>
                             </a>
                         </li>
+                        <li class="nav-item {{ request()->routeIs('abonnement.*') ? 'active' : '' }}">
+                            <a class="nav-link" href="{{ route('abonnement.index') }}">
+                                <span class="nav-link-icon"><i class="ti ti-credit-card"></i></span>
+                                <span class="nav-link-title">
+                                    Abonnement
+                                    @if (auth()->user()->boutique->abonnement_statut === 'essai' && auth()->user()->boutique->joursEssaiRestants() <= 3)
+                                        <span class="badge bg-yellow-lt ms-1">{{ auth()->user()->boutique->joursEssaiRestants() }}j</span>
+                                    @elseif (auth()->user()->boutique->abonnement_statut === 'expire')
+                                        <span class="badge bg-red-lt ms-1">Expiré</span>
+                                    @endif
+                                </span>
+                            </a>
+                        </li>
                     @endif
                 </ul>
             </div>
@@ -107,6 +120,9 @@
         <div class="container-xl">
             @if (session('success'))
                 <div class="alert alert-success">{{ session('success') }}</div>
+            @endif
+            @if (session('error'))
+                <div class="alert alert-danger">{{ session('error') }}</div>
             @endif
             @if ($errors->any())
                 <div class="alert alert-danger">

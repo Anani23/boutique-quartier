@@ -20,6 +20,9 @@ class DatabaseSeeder extends Seeder
             'nom' => 'Épicerie du Coin',
             'adresse' => '12 rue des Manguiers, Quartier Nord',
             'telephone' => '01 23 45 67 89',
+            'abonnement_statut' => Boutique::STATUT_ACTIF,
+            'plan' => 'mensuel',
+            'abonnement_expire_le' => now()->addYear(),
         ]);
 
         $gerant = User::create([

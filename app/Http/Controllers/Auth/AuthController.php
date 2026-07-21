@@ -55,6 +55,8 @@ class AuthController extends Controller
             $boutique = Boutique::create([
                 'nom' => $data['boutique_nom'],
                 'adresse' => $data['boutique_adresse'] ?? null,
+                'abonnement_statut' => Boutique::STATUT_ESSAI,
+                'essai_expire_le' => now()->addDays(14),
             ]);
 
             return User::create([

@@ -31,4 +31,12 @@ return [
         'region' => env('AWS_DEFAULT_REGION', 'us-east-1'),
     ],
 
+    'cinetpay' => [
+        'api_key' => env('CINETPAY_API_KEY', ''),
+        'site_id' => env('CINETPAY_SITE_ID', ''),
+        'base_url' => env('CINETPAY_BASE_URL', 'https://api-checkout.cinetpay.com/v2'),
+        'notify_url' => env('CINETPAY_NOTIFY_URL', env('APP_URL').'/abonnement/webhook'),
+        'return_url' => env('CINETPAY_RETURN_URL', env('APP_URL').'/abonnement/retour'),
+    ],
+
 ];
