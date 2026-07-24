@@ -10,7 +10,12 @@
         <div class="card">
             <div class="card-header bg-white">Produits disponibles</div>
             <div class="card-body">
-                <input type="text" id="recherche" class="form-control mb-3" placeholder="Rechercher un produit...">
+                <div class="d-flex gap-2 mb-3">
+                    <input type="text" id="recherche" class="form-control" placeholder="Rechercher un produit...">
+                    <button type="button" class="btn btn-outline-primary flex-shrink-0" data-bs-toggle="modal" data-bs-target="#modal-scanner">
+                        <i class="ti ti-qrcode"></i> Scanner
+                    </button>
+                </div>
                 <div id="liste-produits" style="max-height: 420px; overflow-y: auto;"></div>
             </div>
         </div>
@@ -38,9 +43,25 @@
         </div>
     </div>
 </div>
+
+<div class="modal modal-blur fade" id="modal-scanner" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Scanner un produit</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+            </div>
+            <div class="modal-body">
+                <div id="qr-reader" style="width: 100%;"></div>
+                <div id="qr-resultat" class="text-center mt-3 fw-bold"></div>
+            </div>
+        </div>
+    </div>
+</div>
 @endsection
 
 @push('scripts')
+<script src="https://cdn.jsdelivr.net/npm/html5-qrcode@2.3.8/html5-qrcode.min.js"></script>
 <script>
 const produits = {!! json_encode($produitsJson) !!};
 
@@ -154,5 +175,55 @@ document.getElementById('form-vente').addEventListener('submit', function (e) {
 });
 
 renderListe();
+
+// --- Scanner QR ---
+let html5QrCode = null;
+let dernierCodeScanne = null;
+let dernierScanTimestamp = 0;
+
+function surCodeDecode(codeTexte) {
+    const maintenant = Date.now();
+    if (codeTexte === dernierCodeScanne && (maintenant - dernierScanTimestamp) < 2500) {
+        return; // évite d'ajouter plusieurs fois le même produit en continu devant la caméra
+    }
+    dernierCodeScanne = codeTexte;
+    dernierScanTimestamp = maintenant;
+
+    const resultat = document.getElementById('qr-resultat');
+    const match = /^PROD-(\d+)$/.exec(codeTexte.trim());
+    const produit = match ? produits.find(p => p.id === parseInt(match[1], 10)) : null;
+
+    if (!produit) {
+        resultat.className = 'text-center mt-3 fw-bold text-danger';
+        resultat.textContent = 'Produit inconnu ou indisponible pour ce QR.';
+        return;
+    }
+
+    ajouterAuPanier(produit);
+    resultat.className = 'text-center mt-3 fw-bold text-success';
+    resultat.textContent = 'Ajouté : ' + produit.nom;
+}
+
+const modalScanner = document.getElementById('modal-scanner');
+modalScanner.addEventListener('shown.bs.modal', () => {
+    document.getElementById('qr-resultat').textContent = '';
+    html5QrCode = new Html5Qrcode('qr-reader');
+    html5QrCode.start(
+        { facingMode: 'environment' },
+        { fps: 10, qrbox: 220 },
+        surCodeDecode,
+        () => {}
+    ).catch(() => {
+        document.getElementById('qr-resultat').innerHTML =
+            '<span class="text-danger">Impossible d\'accéder à la caméra. Vérifiez les autorisations de votre navigateur.</span>';
+    });
+});
+
+modalScanner.addEventListener('hidden.bs.modal', () => {
+    if (html5QrCode) {
+        html5QrCode.stop().then(() => html5QrCode.clear()).catch(() => {});
+        html5QrCode = null;
+    }
+});
 </script>
 @endpush

@@ -15,6 +15,26 @@
         .stat-card { border-radius: .75rem; }
         table.table thead { background-color: var(--tblr-bg-surface-secondary); }
         .nav-link.active { font-weight: 600; }
+
+        /* Fond animé discret, présent sur toute l'application */
+        body { background-color: transparent !important; position: relative; }
+        body::before {
+            content: "";
+            position: fixed;
+            inset: 0;
+            z-index: -1;
+            background: linear-gradient(135deg, rgba(34,49,90,0.07) 0%, rgba(169,119,42,0.06) 45%, rgba(34,49,90,0.07) 100%);
+            background-size: 300% 300%;
+            animation: fondDefilant 28s ease infinite;
+        }
+        @keyframes fondDefilant {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            body::before { animation: none; }
+        }
     </style>
     @stack('styles')
 </head>
