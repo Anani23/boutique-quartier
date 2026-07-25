@@ -68,6 +68,11 @@ php artisan serve
 
 Le seeder crée une boutique de démonstration ("Épicerie du Coin") avec des produits, catégories et ventes d'exemple.
 
+## ☁️ Déploiement
+
+Un `Dockerfile` prêt pour la production est inclus (Railway, Render, Fly.io...).
+Voir [DEPLOY.md](DEPLOY.md) pour le guide pas à pas.
+
 ## 🔑 Comptes de démonstration
 
 | Rôle    | Email                     | Mot de passe |
