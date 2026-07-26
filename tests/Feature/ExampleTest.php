@@ -12,10 +12,17 @@ class ExampleTest extends TestCase
      *
      * @return void
      */
-    public function test_the_application_returns_a_successful_response()
+    public function test_la_racine_redirige_vers_le_tableau_de_bord()
     {
         $response = $this->get('/');
 
-        $response->assertStatus(200);
+        $response->assertRedirect('/dashboard');
+    }
+
+    public function test_un_visiteur_non_connecte_est_redirige_vers_la_connexion()
+    {
+        $response = $this->get('/dashboard');
+
+        $response->assertRedirect('/login');
     }
 }
