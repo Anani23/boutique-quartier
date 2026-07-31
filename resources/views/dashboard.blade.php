@@ -3,7 +3,15 @@
 @section('title', 'Tableau de bord')
 
 @section('content')
-<h4 class="mb-4">Tableau de bord</h4>
+<div class="card mb-4 border-0 position-relative overflow-hidden text-white"
+     style="background-image: url('https://picsum.photos/id/42/1200/300'); background-size: cover; background-position: center; min-height: 160px;">
+    <div class="position-absolute top-0 start-0 end-0 bottom-0"
+         style="background: linear-gradient(90deg, rgba(22,33,63,0.92) 0%, rgba(22,33,63,0.55) 60%, rgba(22,33,63,0.25) 100%);"></div>
+    <div class="card-body position-relative d-flex flex-column justify-content-center">
+        <h3 class="mb-1 text-white">Bonjour, {{ auth()->user()->name }}</h3>
+        <p class="mb-0 opacity-75">Voici un aperçu de {{ auth()->user()->boutique->nom }} aujourd'hui.</p>
+    </div>
+</div>
 
 <div class="row g-3 mb-4">
     <div class="col-md-4">
